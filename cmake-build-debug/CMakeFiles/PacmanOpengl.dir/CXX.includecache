@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/main/window.cpp
+window.h
+C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/main/window.h
+
+C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/main/window.h
+windows.h
+-
+GL/gl.h
+-
+Gl/glut.h
+-
+GL/glu.h
+-
+math.h
+-
+

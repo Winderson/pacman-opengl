@@ -1,14 +1,12 @@
-//
-// Created by Winderson on 13/05/2019.
-//
-
-#ifndef PACMANOPENGL_CONTROLLER_H
-#define PACMANOPENGL_CONTROLLER_H
+#ifndef _CONTROLLER_H
+#define _CONTROLLER_H
 
 
-class controller {
-
+class Controller {
+public:
+    Controller(){};
+    void executar(int argc, char **argv);
 };
 
 
-#endif //PACMANOPENGL_CONTROLLER_H
+#endif //_CONTROLLER_H
