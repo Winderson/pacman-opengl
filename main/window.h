@@ -6,7 +6,6 @@
 #include <Gl/glut.h>
 #include <GL/glu.h>
 #include <math.h>
-
 class Window {
 
 public:
