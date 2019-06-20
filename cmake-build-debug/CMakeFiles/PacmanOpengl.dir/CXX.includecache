@@ -31,6 +31,8 @@ math.h
 C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/arquivo.h
 ../model/matriz.h
 C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/matriz.h
+../model/personagemPacman.h
+C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/personagemPacman.h
 vector
 -
 
@@ -43,4 +45,18 @@ matriz.h
 C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/matriz.h
 
 C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/matriz.h
+
+C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/personagemPacman.h
+personagemPacman.h
+C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/personagemPacman.h
+windows.h
+-
+GL/gl.h
+-
+Gl/glut.h
+-
+GL/glu.h
+-
+math.h
+-
 

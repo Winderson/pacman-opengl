@@ -8,6 +8,7 @@
 #include <math.h>
 #include "../model/arquivo.h"
 #include "../model/matriz.h"
+#include "../model/personagemPacman.h"
 #include <vector>
 class Window {
 
@@ -22,6 +23,7 @@ public:
     void static criarMovimentacaoTecladoObjeto(unsigned char key, int x, int y);
     static int abertoFechado;
     static int milisegundoTimer;
+    static PersonagemPacman *pacman;
 };
 
 

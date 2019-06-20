@@ -1,7 +1,3 @@
-//
-// Created by Winderson on 22/05/2019.
-//
-
 #ifndef _MAPA_H
 #define _MAPA_H
 
