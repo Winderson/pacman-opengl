@@ -6,6 +6,9 @@
 #include <Gl/glut.h>
 #include <GL/glu.h>
 #include <math.h>
+#include "../model/arquivo.h"
+#include "../model/matriz.h"
+#include <vector>
 class Window {
 
 public:

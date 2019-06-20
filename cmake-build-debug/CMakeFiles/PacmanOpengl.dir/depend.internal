@@ -7,9 +7,17 @@ CMakeFiles/PacmanOpengl.dir/controller/controller.cpp.obj
 CMakeFiles/PacmanOpengl.dir/main/main.cpp.obj
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/main/main.cpp
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/main/window.h
+ C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/arquivo.h
+ C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/matriz.h
 CMakeFiles/PacmanOpengl.dir/main/window.cpp.obj
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/main/window.cpp
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/main/window.h
+ C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/arquivo.h
+ C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/matriz.h
+CMakeFiles/PacmanOpengl.dir/model/arquivo.cpp.obj
+ C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/arquivo.cpp
+ C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/arquivo.h
+ C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/matriz.h
 CMakeFiles/PacmanOpengl.dir/model/mapa.cpp.obj
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/mapa.cpp
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/mapa.h
