@@ -14,9 +14,10 @@ float zoom = 0;
 float dimensaoEsquerda = 0;
 float dimensaoDireita = 500;
 float dimensaoBaixo = 0;
-float dimensaoCima = 500;
+float dimensaoCima = 550;
 float alteracaoPosicao = 2;
 int teste = 1;
+int pontos =0;
 
 //
 float personagemX = 250;
@@ -56,7 +57,7 @@ void Window::iniciar(int argc, char **argv) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(dimensaoEsquerda, dimensaoDireita, dimensaoBaixo, dimensaoCima);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
     glutDisplayFunc(this->exibir);
     glutTimerFunc(milisegundoTimer, this->criarAnimacaoObjeto, abertoFechado);
     glutKeyboardFunc(this->criarMovimentacaoTecladoObjeto);
@@ -173,6 +174,21 @@ void Window::criarObjetoPrincipal() {
     glEnd();
     glPopMatrix();
 
+    glPushMatrix();
+    glRasterPos2f(50, 520);
+    string teste = "PONTOS: "+to_string(pontos);
+
+    glColor3f(255, 0, 0);
+    //glDisable(GL_TEXTURE_2D);
+    glScalef(10,10,10);
+    glLineWidth(2);
+
+    for(int i=0; i<teste.size(); i++){
+
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10,teste[i]);
+    }
+    glPopMatrix();
+
     for(int l = 0; l<TAMANHO_MATRIZ_MAPA; l++) {
         for (int c = 0; c < TAMANHO_MATRIZ_MAPA ; c++) {
             if(blocos[l][c].rotulo == 'a'){
@@ -260,6 +276,7 @@ void validacaoColisaoColeta(){
                                 blocos[l][c].y+blocos[l][c].alt >= personagemY;
                 if(colisaoX && colisaoY){
                     blocos[l][c].rotulo = 'l';
+                    pontos++;
                 }
             }
         }
