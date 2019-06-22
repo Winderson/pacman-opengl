@@ -1,15 +1,13 @@
-#include "window.h"
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "window.h"
 
 using namespace std;
-#define TAMANHO_MATRIZ_MAPA 45
+
 
 int Window::abertoFechado = 2;
 int Window::milisegundoTimer = 350;
-
-float zoom = 0;
 
 // Movimento do objeto
 float dimensaoEsquerda = 0;
@@ -41,76 +39,104 @@ float green = 50;
 float blue = 2;
 int milisecMovimentoInimigos = 50;
 
+// Variavel responsavel pela definição do mapa corrente
+int mapaCorrente = 1;
+
+// Variavel responsavel pela exibicao da intro
+bool intro = false;
+
+Objeto objetos[TAMANHO_MATRIZ_MAPA][TAMANHO_MATRIZ_MAPA];
+int matrizMapa1[TAMANHO_MATRIZ_MAPA][TAMANHO_MATRIZ_MAPA];
+int matrizMapa2[TAMANHO_MATRIZ_MAPA][TAMANHO_MATRIZ_MAPA];
 
 /**
- * Construtor
+ * Configurações de inicialização
+ * @param argc
+ * @param argv
  */
-Window::Window() {
-}
-
-
-class Bloco {
-public:
-    float x;
-    float y;
-    float comp;
-    float alt;
-    char rotulo;
-    char direcao;
-};
-
-Bloco blocos[TAMANHO_MATRIZ_MAPA][TAMANHO_MATRIZ_MAPA];
-int matrizMapa[TAMANHO_MATRIZ_MAPA][TAMANHO_MATRIZ_MAPA];
-
 void Window::iniciar(int argc, char **argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(500, 500);
-    glutInitWindowPosition(320, 50);
+    glutInitWindowPosition(420, 50);
     glutCreateWindow("Pacman");
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(dimensaoEsquerda, dimensaoDireita, dimensaoBaixo, dimensaoCima);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glutDisplayFunc(this->exibir);
-    glutTimerFunc(milisegundoTimer, this->criarAnimacaoObjeto, abertoFechado);
-    glutTimerFunc(milisecMovimentoInimigos, this->criarAnimacaoInimigos, abertoFechado);
-    glutKeyboardFunc(this->criarMovimentacaoTecladoObjeto);
     glutMainLoop();
 }
 
-void Window::criarMapaMatriz(void) {
-    int x = 3;
-    int y = 487;
+void Window::criarIntro() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    criarTextoIntro();
+    criarPersonagemPacman();
+    //glutTimerFunc(milisegundoTimer, criarAnimacaoPacmanIntro, abertoFechado);
+    glutSwapBuffers();
+}
 
+/**
+ * Efetua a criação de matriz do mapa 1 de inteiros a partir do
+ * vector de vector retornado na leitura do arquivo
+ */
+void Window::criarMapa1Matriz(void) {
     Arquivo arquivo;
-    vector<Matriz> matrizAux = arquivo.carregar("../pacman.txt", TAMANHO_MATRIZ_MAPA);
+    vector<Matriz> matrizAux1 = arquivo.carregar("../pacman_mapa1.txt", TAMANHO_MATRIZ_MAPA);
 
-    for (int z = 0; z < matrizAux.size(); z++) {
-        matrizMapa[matrizAux[z].getLinha()][matrizAux[z].getColuna()] = matrizAux[z].getValor();
+    // Define a matriz do mapa 1
+    for (int z = 0; z < matrizAux1.size(); z++) {
+        matrizMapa1[matrizAux1[z].getLinha()][matrizAux1[z].getColuna()] = matrizAux1[z].getValor();
     }
 
+    converterMapaMatriz(matrizMapa1);
+}
+
+/**
+ * Efetua a criação de matriz do mapa 2 de inteiros a partir do
+ * vector de vector retornado na leitura do arquivo
+ */
+void Window::criarMapa2Matriz() {
+    Arquivo arquivo;
+    vector<Matriz> matrizAux2 = arquivo.carregar("../pacman_mapa2.txt", TAMANHO_MATRIZ_MAPA);
+    // Define a matriz do mapa 2
+    for (int z = 0; z < matrizAux2.size(); z++) {
+        matrizMapa1[matrizAux2[z].getLinha()][matrizAux2[z].getColuna()] = matrizAux2[z].getValor();
+    }
+
+    converterMapaMatriz(matrizMapa1);
+}
+
+/**
+ * Efetua a conversão da matriz de inteiros para a matriz de objetos
+ * definindo as posições, o rotulo, o comprimento e a altura para cada
+ * objeto presente na matriz
+ * @param matrizMapa1
+ */
+void Window::converterMapaMatriz(int matrizMapa1[TAMANHO_MATRIZ_MAPA][TAMANHO_MATRIZ_MAPA]) {
+    int x = 3;
+    int y = 487;
     for (int l = 0; l < TAMANHO_MATRIZ_MAPA; l++) {
         for (int c = 0; c < TAMANHO_MATRIZ_MAPA; c++, x += 11) {
-            if (matrizMapa[l][c] == 1) {
-                blocos[l][c].rotulo = 'a';
-                blocos[l][c].x = x;
-                blocos[l][c].y = y;
-                blocos[l][c].comp = 10;
-                blocos[l][c].alt = 10;
-            } else if (matrizMapa[l][c] == 2) {
-                blocos[l][c].rotulo = 'b';
-                blocos[l][c].x = x + 4;
-                blocos[l][c].y = y + 4;
-                blocos[l][c].comp = 3;
-                blocos[l][c].alt = 3;
-            } else if (matrizMapa[l][c] == 3) {
-                blocos[l][c].rotulo = 'c';
-                blocos[l][c].x = x + 5;
-                blocos[l][c].y = y + 5;
-                blocos[l][c].comp = 3;
-                blocos[l][c].alt = 3;
-                blocos[l][c].direcao = 'b';
+            if (matrizMapa1[l][c] == 1) {
+                objetos[l][c].setRotulo('a');
+                objetos[l][c].setPosicaoX(x);
+                objetos[l][c].setPosicaoY(y);
+                objetos[l][c].setComprimento(10);
+                objetos[l][c].setAltura(10);
+            } else if (matrizMapa1[l][c] == 2) {
+                objetos[l][c].setRotulo('b');
+                objetos[l][c].setPosicaoX(x + 4);
+                objetos[l][c].setPosicaoY(y + 4);
+                objetos[l][c].setComprimento(3);
+                objetos[l][c].setAltura(3);
+            } else if (matrizMapa1[l][c] == 3) {
+                objetos[l][c].setRotulo('c');
+                objetos[l][c].setPosicaoX(x + 5);
+                objetos[l][c].setPosicaoY(y + 5);
+                objetos[l][c].setComprimento(3);
+                objetos[l][c].setAltura(3);
+                objetos[l][c].setDirecao('b');
             }
         }
         x = 3;
@@ -118,36 +144,11 @@ void Window::criarMapaMatriz(void) {
     }
 }
 
-void Window::criarObjetoPrincipal() {
+/**
+ * Desenho do personagem pacman
+ */
+void Window::criarPersonagemPacman() {
     float theta;
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    // Pontos
-    glRasterPos2f(50, 520);
-    glColor3f(255, 255, 255);
-    string teste = "PONTOS: " + to_string(pontos);
-    for (int i = 0; i < teste.size(); i++) {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, teste[i]);
-    }
-
-
-    // Quantidade de vidas
-    float posicaoXAux = 150;
-    float posicaoYAux = 525;
-    glColor3f(255, 255, 0);
-    for(int x =0; x<quantidadeVidas;x++){
-        glBegin(GL_POLYGON);
-        for (int i = 0; i < 360; i++) {
-            theta = i * 3.142 / 180;
-            glVertex2f(posicaoXAux + raioObjeto * cos(theta), posicaoYAux + raioObjeto * sin(theta));
-        }
-        posicaoXAux += raioObjeto*2.2;
-        glEnd();
-    }
-
-
-
-    // Circulo
     glColor3f(255, 255, 0);
     glBegin(GL_POLYGON);
     for (int i = 0; i < 360; i++) {
@@ -220,45 +221,101 @@ void Window::criarObjetoPrincipal() {
     }
     glEnd();
     glPopMatrix();
+}
 
+/**
+ * Desenho das informações de pontos e quantidade de vidas
+ */
+void Window::criarPainelInformacoes() {
+    float theta;
+    // Pontos
+    glRasterPos2f(50, 520);
+    glColor3f(255, 255, 255);
+    string teste = "PONTOS: " + to_string(pontos);
+    for (int i = 0; i < teste.size(); i++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, teste[i]);
+    }
 
+    // Quantidade de vidas
+    float posicaoXAux = 150;
+    float posicaoYAux = 525;
+    glColor3f(255, 255, 0);
+    for (int x = 0; x < quantidadeVidas; x++) {
+        glBegin(GL_POLYGON);
+        for (int i = 0; i < 360; i++) {
+            theta = i * 3.142 / 180;
+            glVertex2f(posicaoXAux + raioObjeto * cos(theta), posicaoYAux + raioObjeto * sin(theta));
+        }
+        posicaoXAux += raioObjeto * 2.2;
+        glEnd();
+    }
+}
+
+/**
+ * Desenho dos objetos mapeados na matriz dos arquivos de
+ * mapas
+ */
+void Window::criarObjetosMatriz(void) {
+    float theta;
     for (int l = 0; l < TAMANHO_MATRIZ_MAPA; l++) {
         for (int c = 0; c < TAMANHO_MATRIZ_MAPA; c++) {
-            if (blocos[l][c].rotulo == 'a') {
+            if (objetos[l][c].getRotulo() == 'a') {
                 glBegin(GL_QUADS);
                 glColor3f(0, 0, 255);
-                glVertex2f(blocos[l][c].x, blocos[l][c].y);
-                glVertex2f(blocos[l][c].x + blocos[l][c].comp, blocos[l][c].y);
-                glVertex2f(blocos[l][c].x + blocos[l][c].comp, blocos[l][c].y + blocos[l][c].alt);
-                glVertex2f(blocos[l][c].x, blocos[l][c].y + blocos[l][c].alt);
+                glVertex2f(objetos[l][c].getPosicaoX(), objetos[l][c].getPosicaoY());
+                glVertex2f(objetos[l][c].getPosicaoX() + objetos[l][c].getComprimento(), objetos[l][c].getPosicaoY());
+                glVertex2f(objetos[l][c].getPosicaoX() + objetos[l][c].getComprimento(),
+                           objetos[l][c].getPosicaoY() + objetos[l][c].getAltura());
+                glVertex2f(objetos[l][c].getPosicaoX(), objetos[l][c].getPosicaoY() + objetos[l][c].getAltura());
                 glEnd();
-            } else if (blocos[l][c].rotulo == 'b') {
+            } else if (objetos[l][c].getRotulo() == 'b') {
                 glBegin(GL_QUADS);
                 glColor3f(255, 255, 255);
-                glVertex2f(blocos[l][c].x, blocos[l][c].y);
-                glVertex2f(blocos[l][c].x + blocos[l][c].comp, blocos[l][c].y);
-                glVertex2f(blocos[l][c].x + blocos[l][c].comp, blocos[l][c].y + blocos[l][c].alt);
-                glVertex2f(blocos[l][c].x, blocos[l][c].y + blocos[l][c].alt);
+                glVertex2f(objetos[l][c].getPosicaoX(), objetos[l][c].getPosicaoY());
+                glVertex2f(objetos[l][c].getPosicaoX() + objetos[l][c].getComprimento(), objetos[l][c].getPosicaoY());
+                glVertex2f(objetos[l][c].getPosicaoX() + objetos[l][c].getComprimento(),
+                           objetos[l][c].getPosicaoY() + objetos[l][c].getAltura());
+                glVertex2f(objetos[l][c].getPosicaoX(), objetos[l][c].getPosicaoY() + objetos[l][c].getAltura());
                 glEnd();
-            } else if (blocos[l][c].rotulo == 'c') {
+            } else if (objetos[l][c].getRotulo() == 'c') {
                 glColor3f(red, green, blue);
                 glBegin(GL_POLYGON);
                 for (int i = 0; i < 360; i++) {
                     theta = i * 3.142 / 180;
-                    glVertex2f(blocos[l][c].x + raioObjeto * cos(theta), blocos[l][c].y + raioObjeto * sin(theta));
+                    glVertex2f(objetos[l][c].getPosicaoX() + raioObjeto * cos(theta),
+                               objetos[l][c].getPosicaoY() + raioObjeto * sin(theta));
                 }
                 glEnd();
-                red = +50;
-                green = +2;
-                blue = +20;
+                red +=50;
+                green += 2;
+                blue += 20;
             }
         }
     }
+}
 
+/**
+ * Efetua a criação do cenario
+ */
+void Window::criarCenario() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    // Criação de painel de informações
+    criarPainelInformacoes();
+
+    // Criação do personagem pacman
+    criarPersonagemPacman();
+
+    // Criação dos objetos da matriz
+    criarObjetosMatriz();
     glutSwapBuffers();
 }
 
-void Window::criarAnimacaoObjeto(int valor) {
+/**
+ * Efetua a criação da animação do pacman
+ * ato de abrir e fechar a boca
+ * @param valor
+ */
+void Window::criarAnimacaoPacman(int valor) {
     if (valor == 0) {
         abertoFechado = 1;
     } else if (valor == 1) {
@@ -276,7 +333,7 @@ void Window::criarAnimacaoObjeto(int valor) {
     } else if (valor == 7) {
         abertoFechado = 6;
     }
-    criarObjetoPrincipal();
+    criarCenario();
 }
 
 bool validacaoColisaoDosInimigos(float posicaoX, float posicaoY) {
@@ -284,11 +341,11 @@ bool validacaoColisaoDosInimigos(float posicaoX, float posicaoY) {
         for (int c = 0; c < TAMANHO_MATRIZ_MAPA; c++) {
 
             // Colisão com as paredes do mapa
-            if (blocos[l][c].rotulo == 'a') {
-                bool colisaoX = posicaoX + raioObjeto >= blocos[l][c].x - 3 &&
-                                blocos[l][c].x + (blocos[l][c].comp * 2) + 6 >= posicaoX;
-                bool colisaoY = posicaoY + raioObjeto >= blocos[l][c].y - 3 &&
-                                blocos[l][c].y + (blocos[l][c].alt * 2) + 7 >= posicaoY;
+            if (objetos[l][c].getRotulo() == 'a') {
+                bool colisaoX = posicaoX + raioObjeto >= objetos[l][c].getPosicaoX() - 3 &&
+                                objetos[l][c].getPosicaoX() + (objetos[l][c].getComprimento() * 2) + 6 >= posicaoX;
+                bool colisaoY = posicaoY + raioObjeto >= objetos[l][c].getPosicaoY() - 3 &&
+                                objetos[l][c].getPosicaoY() + (objetos[l][c].getAltura() * 2) + 7 >= posicaoY;
                 if (colisaoX && colisaoY) {
                     return true;
                 }
@@ -298,84 +355,148 @@ bool validacaoColisaoDosInimigos(float posicaoX, float posicaoY) {
     return false;
 }
 
+void Window::criarTextoIntro() {
+    glRasterPos2f(210, 250);
+    glColor3f(0, 0, 255);
+
+    glRasterPos2f(210, 250);
+    string texto = "PACMAN";
+    for (int i = 0; i < texto.size(); i++) {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, texto[i]);
+    }
+
+    glColor3f(255, 255, 0);
+    glRasterPos2f(215, 220);
+    string textoOpcao1 = "Comecar a jogar.";
+    for (int i = 0; i < textoOpcao1.size(); i++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, textoOpcao1[i]);
+    }
+
+    glColor3f(255, 255, 0);
+    glRasterPos2f(230, 190);
+    string textoOpcao2 = "Triangulos.";
+    for (int i = 0; i < textoOpcao2.size(); i++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, textoOpcao2[i]);
+    }
+
+
+    glColor3f(0, 255, 0);
+    glRasterPos2f(150, 70);
+    string texto2 = "Computacao Grafica / Prof.: Diogenes";
+    for (int i = 0; i < texto2.size(); i++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, texto2[i]);
+    }
+
+    glColor3f(255,255,0);
+    glRasterPos2f(152, 50);
+    string texto3 = "Winderson Jose Barboza dos Santos";
+    for (int i = 0; i < texto2.size(); i++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, texto3[i]);
+    }
+}
+
+void Window::criarAnimacaoPacmanIntro(int valor) {
+    if (valor == 2) {
+        abertoFechado = 3;
+    } else {
+        abertoFechado = 2;
+    }
+
+    if(personagemX < 250) {
+        personagemX += alteracaoPosicaoPacman;
+    }
+
+    // Criação do personagem pacman
+    criarIntro();
+}
+
 void Window::criarAnimacaoInimigos(int valor) {
     for (int l = 0; l < TAMANHO_MATRIZ_MAPA; l++) {
         for (int c = 0; c < TAMANHO_MATRIZ_MAPA; c++) {
-            if (blocos[l][c].rotulo == 'c') {
-                if (blocos[l][c].direcao == 'e') {
-                    if (!validacaoColisaoDosInimigos(blocos[l][c].x, blocos[l][c].y - (alteracaoPosicaoInimigo + 5))) {
-                        blocos[l][c].y -= alteracaoPosicaoInimigo;
-                        blocos[l][c].direcao = 'b';
-                    } else if (!validacaoColisaoDosInimigos(blocos[l][c].x - (alteracaoPosicaoInimigo + 5),
-                                                            blocos[l][c].y)) {
-                        blocos[l][c].x -= alteracaoPosicaoInimigo;
-                        blocos[l][c].direcao = 'e';
-                    } else if (!validacaoColisaoDosInimigos(blocos[l][c].x,
-                                                            blocos[l][c].y + (alteracaoPosicaoInimigo + 5))) {
-                        blocos[l][c].y += alteracaoPosicaoInimigo;
-                        blocos[l][c].direcao = 'c';
-                    } else if (!validacaoColisaoDosInimigos(blocos[l][c].x + (alteracaoPosicaoInimigo + 5),
-                                                            blocos[l][c].y)) {
-                        blocos[l][c].x += alteracaoPosicaoInimigo;
-                        blocos[l][c].direcao = 'd';
+            if (objetos[l][c].getRotulo() == 'c') {
+                if (objetos[l][c].getDirecao() == 'e') {
+                    if (!validacaoColisaoDosInimigos(objetos[l][c].getPosicaoX(),
+                                                     objetos[l][c].getPosicaoY() - (alteracaoPosicaoInimigo + 5))) {
+                        objetos[l][c].setPosicaoY(objetos[l][c].getPosicaoY() - alteracaoPosicaoInimigo);
+                        objetos[l][c].setDirecao('b');
+                    } else if (!validacaoColisaoDosInimigos(objetos[l][c].getPosicaoX() - (alteracaoPosicaoInimigo + 5),
+                                                            objetos[l][c].getPosicaoY())) {
+                        objetos[l][c].setPosicaoX(objetos[l][c].getPosicaoX() - alteracaoPosicaoInimigo);
+                        objetos[l][c].setDirecao('e');
+                    } else if (!validacaoColisaoDosInimigos(objetos[l][c].getPosicaoX(),
+                                                            objetos[l][c].getPosicaoY() +
+                                                            (alteracaoPosicaoInimigo + 5))) {
+                        objetos[l][c].setPosicaoY(objetos[l][c].getPosicaoY() + alteracaoPosicaoInimigo);
+                        objetos[l][c].setDirecao('c');
+                    } else if (!validacaoColisaoDosInimigos(objetos[l][c].getPosicaoX() + (alteracaoPosicaoInimigo + 5),
+                                                            objetos[l][c].getPosicaoY())) {
+                        objetos[l][c].setPosicaoX(objetos[l][c].getPosicaoX() + alteracaoPosicaoInimigo);
+                        objetos[l][c].setDirecao('d');
                     }
-                } else if (blocos[l][c].direcao == 'd') {
-                    if (!validacaoColisaoDosInimigos(blocos[l][c].x, blocos[l][c].y + (alteracaoPosicaoInimigo + 5))) {
-                        blocos[l][c].y += alteracaoPosicaoInimigo;
-                        blocos[l][c].direcao = 'c';
-                    } else if (!validacaoColisaoDosInimigos(blocos[l][c].x + (alteracaoPosicaoInimigo + 5),
-                                                            blocos[l][c].y)) {
-                        blocos[l][c].x += alteracaoPosicaoInimigo;
-                        blocos[l][c].direcao = 'd';
-                    } else if (!validacaoColisaoDosInimigos(blocos[l][c].x,
-                                                            blocos[l][c].y - (alteracaoPosicaoInimigo + 5))) {
-                        blocos[l][c].y -= alteracaoPosicaoInimigo;
-                        blocos[l][c].direcao = 'b';
-                    } else if (!validacaoColisaoDosInimigos(blocos[l][c].x - (alteracaoPosicaoInimigo + 5),
-                                                            blocos[l][c].y)) {
-                        blocos[l][c].x -= alteracaoPosicaoInimigo;
-                        blocos[l][c].direcao = 'e';
+                } else if (objetos[l][c].getDirecao() == 'd') {
+                    if (!validacaoColisaoDosInimigos(objetos[l][c].getPosicaoX(),
+                                                     objetos[l][c].getPosicaoY() + (alteracaoPosicaoInimigo + 5))) {
+                        objetos[l][c].setPosicaoY(objetos[l][c].getPosicaoY() + alteracaoPosicaoInimigo);
+                        objetos[l][c].setDirecao('c');
+                    } else if (!validacaoColisaoDosInimigos(objetos[l][c].getPosicaoX() + (alteracaoPosicaoInimigo + 5),
+                                                            objetos[l][c].getPosicaoY())) {
+                        objetos[l][c].setPosicaoX(objetos[l][c].getPosicaoX() + alteracaoPosicaoInimigo);
+                        objetos[l][c].setDirecao('d');
+                    } else if (!validacaoColisaoDosInimigos(objetos[l][c].getPosicaoX(),
+                                                            objetos[l][c].getPosicaoY() -
+                                                            (alteracaoPosicaoInimigo + 5))) {
+                        objetos[l][c].setPosicaoY(objetos[l][c].getPosicaoY() - alteracaoPosicaoInimigo);
+                        objetos[l][c].setDirecao('b');
+                    } else if (!validacaoColisaoDosInimigos(objetos[l][c].getPosicaoX() - (alteracaoPosicaoInimigo + 5),
+                                                            objetos[l][c].getPosicaoY())) {
+                        objetos[l][c].setPosicaoX(objetos[l][c].getPosicaoX() - alteracaoPosicaoInimigo);
+                        objetos[l][c].setDirecao('e');
                     }
-                } else if (blocos[l][c].direcao == 'c') {
-                    if (!validacaoColisaoDosInimigos(blocos[l][c].x - (alteracaoPosicaoInimigo + 5), blocos[l][c].y)) {
-                        blocos[l][c].x -= alteracaoPosicaoInimigo;
-                        blocos[l][c].direcao = 'e';
-                    } else if (!validacaoColisaoDosInimigos(blocos[l][c].x,
-                                                            blocos[l][c].y + (alteracaoPosicaoPacman))) {
-                        blocos[l][c].y += alteracaoPosicaoInimigo;
-                        blocos[l][c].direcao = 'c';
-                    } else if (!validacaoColisaoDosInimigos(blocos[l][c].x + (alteracaoPosicaoInimigo + 5),
-                                                            blocos[l][c].y)) {
-                        blocos[l][c].x += alteracaoPosicaoInimigo;
-                        blocos[l][c].direcao = 'd';
-                    } else if (!validacaoColisaoDosInimigos(blocos[l][c].x,
-                                                            blocos[l][c].y - (alteracaoPosicaoInimigo + 5))) {
-                        blocos[l][c].y -= alteracaoPosicaoInimigo;
-                        blocos[l][c].direcao = 'b';
+                } else if (objetos[l][c].getDirecao() == 'c') {
+                    if (!validacaoColisaoDosInimigos(objetos[l][c].getPosicaoX() - (alteracaoPosicaoInimigo + 5),
+                                                     objetos[l][c].getPosicaoY())) {
+                        objetos[l][c].setPosicaoX(objetos[l][c].getPosicaoX() - alteracaoPosicaoInimigo);
+                        objetos[l][c].setDirecao('e');
+                    } else if (!validacaoColisaoDosInimigos(objetos[l][c].getPosicaoX(),
+                                                            objetos[l][c].getPosicaoY() + (alteracaoPosicaoPacman))) {
+                        objetos[l][c].setPosicaoY(objetos[l][c].getPosicaoY() + alteracaoPosicaoInimigo);
+                        objetos[l][c].setDirecao('c');
+                    } else if (!validacaoColisaoDosInimigos(objetos[l][c].getPosicaoX() + (alteracaoPosicaoInimigo + 5),
+                                                            objetos[l][c].getPosicaoY())) {
+                        objetos[l][c].setPosicaoX(objetos[l][c].getPosicaoX() + alteracaoPosicaoInimigo);
+                        objetos[l][c].setDirecao('d');
+                    } else if (!validacaoColisaoDosInimigos(objetos[l][c].getPosicaoX(),
+                                                            objetos[l][c].getPosicaoY() -
+                                                            (alteracaoPosicaoInimigo + 5))) {
+                        objetos[l][c].setPosicaoY(objetos[l][c].getPosicaoY() - alteracaoPosicaoInimigo);
+                        objetos[l][c].setDirecao('b');
                     }
 
-                } else if (blocos[l][c].direcao == 'b') {
-                    if (!validacaoColisaoDosInimigos(blocos[l][c].x + (alteracaoPosicaoInimigo + 5), blocos[l][c].y)) {
-                        blocos[l][c].x += alteracaoPosicaoInimigo;
-                        blocos[l][c].direcao = 'd';
-                    } else if (!validacaoColisaoDosInimigos(blocos[l][c].x,
-                                                            blocos[l][c].y - (alteracaoPosicaoInimigo + 5))) {
-                        blocos[l][c].y -= alteracaoPosicaoInimigo;
-                        blocos[l][c].direcao = 'b';
-                    } else if (!validacaoColisaoDosInimigos(blocos[l][c].x - (alteracaoPosicaoInimigo + 5),
-                                                            blocos[l][c].y)) {
-                        blocos[l][c].x -= alteracaoPosicaoInimigo;
-                        blocos[l][c].direcao = 'e';
-                    } else if (!validacaoColisaoDosInimigos(blocos[l][c].x,
-                                                            blocos[l][c].y + (alteracaoPosicaoInimigo + 5))) {
-                        blocos[l][c].y += alteracaoPosicaoInimigo;
-                        blocos[l][c].direcao = 'c';
+                } else if (objetos[l][c].getDirecao() == 'b') {
+                    if (!validacaoColisaoDosInimigos(objetos[l][c].getPosicaoX() + (alteracaoPosicaoInimigo + 5),
+                                                     objetos[l][c].getPosicaoY())) {
+                        objetos[l][c].setPosicaoX(objetos[l][c].getPosicaoX() + alteracaoPosicaoInimigo);
+                        objetos[l][c].setDirecao('d');
+                    } else if (!validacaoColisaoDosInimigos(objetos[l][c].getPosicaoX(),
+                                                            objetos[l][c].getPosicaoY() -
+                                                            (alteracaoPosicaoInimigo + 5))) {
+                        objetos[l][c].setPosicaoY(objetos[l][c].getPosicaoY() - alteracaoPosicaoInimigo);
+                        objetos[l][c].setDirecao('b');
+                    } else if (!validacaoColisaoDosInimigos(objetos[l][c].getPosicaoX() - (alteracaoPosicaoInimigo + 5),
+                                                            objetos[l][c].getPosicaoY())) {
+                        objetos[l][c].setPosicaoX(objetos[l][c].getPosicaoX() - alteracaoPosicaoInimigo);
+                        objetos[l][c].setDirecao('e');
+                    } else if (!validacaoColisaoDosInimigos(objetos[l][c].getPosicaoX(),
+                                                            objetos[l][c].getPosicaoY() +
+                                                            (alteracaoPosicaoInimigo + 5))) {
+                        objetos[l][c].setPosicaoY(objetos[l][c].getPosicaoY() + alteracaoPosicaoInimigo);
+                        objetos[l][c].setDirecao('c');
                     }
                 }
             }
         }
     }
-    criarObjetoPrincipal();
+    criarCenario();
     glutTimerFunc(milisecMovimentoInimigos, criarAnimacaoInimigos, abertoFechado);
 }
 
@@ -384,11 +505,11 @@ bool validaColisaoInimigos() {
     for (int l = 0; l < TAMANHO_MATRIZ_MAPA; l++) {
         for (int c = 0; c < TAMANHO_MATRIZ_MAPA; c++) {
             // Colisão com as paredes do mapa
-            if (blocos[l][c].rotulo == 'c') {
-                bool colisaoX = personagemX + raioObjeto >= blocos[l][c].x - 3 &&
-                                blocos[l][c].x + (blocos[l][c].comp * 2) + 6 >= personagemX;
-                bool colisaoY = personagemY + raioObjeto >= blocos[l][c].y - 3 &&
-                                blocos[l][c].y + (blocos[l][c].alt * 2) + 7 >= personagemY;
+            if (objetos[l][c].getRotulo() == 'c') {
+                bool colisaoX = personagemX + raioObjeto >= objetos[l][c].getPosicaoX() - 3 &&
+                                objetos[l][c].getPosicaoX() + (objetos[l][c].getComprimento() * 2) + 6 >= personagemX;
+                bool colisaoY = personagemY + raioObjeto >= objetos[l][c].getPosicaoY() - 3 &&
+                                objetos[l][c].getPosicaoY() + (objetos[l][c].getAltura() * 2) + 7 >= personagemY;
                 if (colisaoX && colisaoY) {
                     return true;
                 }
@@ -402,11 +523,11 @@ bool validaColisaoParedes() {
     for (int l = 0; l < TAMANHO_MATRIZ_MAPA; l++) {
         for (int c = 0; c < TAMANHO_MATRIZ_MAPA; c++) {
             // Colisão com as paredes do mapa
-            if (blocos[l][c].rotulo == 'a') {
-                bool colisaoX = personagemX + raioObjeto >= blocos[l][c].x - 3 &&
-                                blocos[l][c].x + (blocos[l][c].comp * 2) + 6 >= personagemX;
-                bool colisaoY = personagemY + raioObjeto >= blocos[l][c].y - 3 &&
-                                blocos[l][c].y + (blocos[l][c].alt * 2) + 7 >= personagemY;
+            if (objetos[l][c].getRotulo() == 'a') {
+                bool colisaoX = personagemX + raioObjeto >= objetos[l][c].getPosicaoX() - 3 &&
+                                objetos[l][c].getPosicaoX() + (objetos[l][c].getComprimento() * 2) + 6 >= personagemX;
+                bool colisaoY = personagemY + raioObjeto >= objetos[l][c].getPosicaoY() - 3 &&
+                                objetos[l][c].getPosicaoY() + (objetos[l][c].getAltura() * 2) + 7 >= personagemY;
                 if (colisaoX && colisaoY) {
                     return true;
                 }
@@ -420,17 +541,28 @@ void validacaoColisaoColeta() {
     for (int l = 0; l < TAMANHO_MATRIZ_MAPA; l++) {
         for (int c = 0; c < TAMANHO_MATRIZ_MAPA; c++) {
             // Colisão com objetos de coleta
-            if (blocos[l][c].rotulo == 'b') {
-                bool colisaoX = personagemX >= blocos[l][c].x &&
-                                blocos[l][c].x + blocos[l][c].comp >= personagemX;
-                bool colisaoY = personagemY + raioObjeto >= blocos[l][c].y &&
-                                blocos[l][c].y + blocos[l][c].alt >= personagemY;
+            if (objetos[l][c].getRotulo() == 'b') {
+                bool colisaoX = personagemX >= objetos[l][c].getPosicaoX() &&
+                                objetos[l][c].getPosicaoX() + objetos[l][c].getComprimento() >= personagemX;
+                bool colisaoY = personagemY + raioObjeto >= objetos[l][c].getPosicaoY() &&
+                                objetos[l][c].getPosicaoY() + objetos[l][c].getAltura() >= personagemY;
                 if (colisaoX && colisaoY) {
-                    blocos[l][c].rotulo = 'l';
+                    objetos[l][c].setRotulo('l');
                     pontos++;
                 }
             }
         }
+    }
+}
+
+void Window::criarAcaoMouse(int button, int state, int x, int y){
+    int aux = 0;
+    if(x >= 215 && x <= 306 && y>=220 && y<298){
+        intro = true;
+        raioObjeto = 11;
+        alteracaoPosicaoPacman = 2;
+        personagemX = 250;
+        glutPostRedisplay();
     }
 }
 
@@ -522,11 +654,31 @@ void Window::criarMovimentacaoTecladoObjeto(unsigned char key, int x, int y) {
             abertoFechado = 5;
         }
     }
-    glutTimerFunc(milisegundoTimer, criarAnimacaoObjeto, abertoFechado);
+
+    // Criação de timer
+    glutTimerFunc(milisegundoTimer, criarAnimacaoPacman, abertoFechado);
 }
 
 
+
+/**
+ * Efetua a exibição
+ */
 void Window::exibir(void) {
-    criarMapaMatriz();
-    criarObjetoPrincipal();
+    if(intro) {
+        if (mapaCorrente == 1) {
+            criarMapa1Matriz();
+        } else if (mapaCorrente == 2) {
+            criarMapa2Matriz();
+        }
+        glutTimerFunc(milisegundoTimer, criarAnimacaoPacman, abertoFechado);
+        glutTimerFunc(milisecMovimentoInimigos, criarAnimacaoInimigos, abertoFechado);
+        glutKeyboardFunc(criarMovimentacaoTecladoObjeto);
+    } else {
+        raioObjeto = 25;
+        //alteracaoPosicaoPacman = 20;
+        //personagemX = 250;
+        glutMouseFunc(criarAcaoMouse);
+        criarIntro();
+    }
 }

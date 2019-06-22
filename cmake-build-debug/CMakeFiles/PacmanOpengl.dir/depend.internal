@@ -9,12 +9,14 @@ CMakeFiles/PacmanOpengl.dir/main/main.cpp.obj
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/main/window.h
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/arquivo.h
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/matriz.h
+ C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/objeto.h
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/personagemPacman.h
 CMakeFiles/PacmanOpengl.dir/main/window.cpp.obj
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/main/window.cpp
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/main/window.h
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/arquivo.h
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/matriz.h
+ C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/objeto.h
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/personagemPacman.h
 CMakeFiles/PacmanOpengl.dir/model/arquivo.cpp.obj
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/arquivo.cpp
@@ -30,6 +32,7 @@ CMakeFiles/PacmanOpengl.dir/model/personagem.cpp.obj
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/main/window.h
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/arquivo.h
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/matriz.h
+ C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/objeto.h
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/personagem.cpp
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/personagem.h
  C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/personagemPacman.h
