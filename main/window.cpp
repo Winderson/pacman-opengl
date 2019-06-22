@@ -101,10 +101,10 @@ void Window::criarMapa2Matriz() {
     vector<Matriz> matrizAux2 = arquivo.carregar("../pacman_mapa2.txt", TAMANHO_MATRIZ_MAPA);
     // Define a matriz do mapa 2
     for (int z = 0; z < matrizAux2.size(); z++) {
-        matrizMapa1[matrizAux2[z].getLinha()][matrizAux2[z].getColuna()] = matrizAux2[z].getValor();
+        matrizMapa2[matrizAux2[z].getLinha()][matrizAux2[z].getColuna()] = matrizAux2[z].getValor();
     }
 
-    converterMapaMatriz(matrizMapa1);
+    converterMapaMatriz(matrizMapa2);
 }
 
 /**
@@ -113,30 +113,36 @@ void Window::criarMapa2Matriz() {
  * objeto presente na matriz
  * @param matrizMapa1
  */
-void Window::converterMapaMatriz(int matrizMapa1[TAMANHO_MATRIZ_MAPA][TAMANHO_MATRIZ_MAPA]) {
+void Window::converterMapaMatriz(int matrizMapa[TAMANHO_MATRIZ_MAPA][TAMANHO_MATRIZ_MAPA]) {
     int x = 3;
     int y = 487;
     for (int l = 0; l < TAMANHO_MATRIZ_MAPA; l++) {
         for (int c = 0; c < TAMANHO_MATRIZ_MAPA; c++, x += 11) {
-            if (matrizMapa1[l][c] == 1) {
+            if (matrizMapa[l][c] == 1) {
                 objetos[l][c].setRotulo('a');
                 objetos[l][c].setPosicaoX(x);
                 objetos[l][c].setPosicaoY(y);
                 objetos[l][c].setComprimento(10);
                 objetos[l][c].setAltura(10);
-            } else if (matrizMapa1[l][c] == 2) {
+            } else if (matrizMapa[l][c] == 2) {
                 objetos[l][c].setRotulo('b');
                 objetos[l][c].setPosicaoX(x + 4);
                 objetos[l][c].setPosicaoY(y + 4);
                 objetos[l][c].setComprimento(3);
                 objetos[l][c].setAltura(3);
-            } else if (matrizMapa1[l][c] == 3) {
+            } else if (matrizMapa[l][c] == 3) {
                 objetos[l][c].setRotulo('c');
                 objetos[l][c].setPosicaoX(x + 5);
                 objetos[l][c].setPosicaoY(y + 5);
                 objetos[l][c].setComprimento(3);
                 objetos[l][c].setAltura(3);
                 objetos[l][c].setDirecao('b');
+            } else if (matrizMapa[l][c] == 4) {
+                objetos[l][c].setRotulo('d');
+                objetos[l][c].setPosicaoX(x);
+                objetos[l][c].setPosicaoY(y);
+                objetos[l][c].setComprimento(10);
+                objetos[l][c].setAltura(10);
             }
         }
         x = 3;
@@ -261,7 +267,11 @@ void Window::criarObjetosMatriz(void) {
         for (int c = 0; c < TAMANHO_MATRIZ_MAPA; c++) {
             if (objetos[l][c].getRotulo() == 'a') {
                 glBegin(GL_QUADS);
-                glColor3f(0, 0, 255);
+                if(mapaCorrente == 1)
+                    glColor3f(0, 0, 255);
+                else if (mapaCorrente == 2){
+                    glColor3f(0, 255, 0);
+                }
                 glVertex2f(objetos[l][c].getPosicaoX(), objetos[l][c].getPosicaoY());
                 glVertex2f(objetos[l][c].getPosicaoX() + objetos[l][c].getComprimento(), objetos[l][c].getPosicaoY());
                 glVertex2f(objetos[l][c].getPosicaoX() + objetos[l][c].getComprimento(),
@@ -334,6 +344,24 @@ void Window::criarAnimacaoPacman(int valor) {
         abertoFechado = 6;
     }
     criarCenario();
+}
+
+void validacaoColisaoTrocaMapa(){
+    for (int l = 0; l < TAMANHO_MATRIZ_MAPA; l++) {
+        for (int c = 0; c < TAMANHO_MATRIZ_MAPA; c++) {
+            // Colisão com as paredes do mapa
+            if (objetos[l][c].getRotulo() == 'd') {
+                bool colisaoX = personagemX - raioObjeto >= objetos[l][c].getPosicaoX() &&
+                                objetos[l][c].getPosicaoX() + (objetos[l][c].getComprimento()) >= personagemX-raioObjeto;
+                bool colisaoY = personagemY - raioObjeto >= objetos[l][c].getPosicaoY() &&
+                                objetos[l][c].getPosicaoY() + (objetos[l][c].getAltura()) >= personagemY - raioObjeto;
+                if (colisaoX && colisaoY) {
+                    mapaCorrente = 2;
+                    glutPostRedisplay();
+                }
+            }
+        }
+    }
 }
 
 bool validacaoColisaoDosInimigos(float posicaoX, float posicaoY) {
@@ -584,6 +612,8 @@ void Window::criarMovimentacaoTecladoObjeto(unsigned char key, int x, int y) {
         // Trata colisão de coleta
         validacaoColisaoColeta();
 
+        // Trata colisão mudanca de mapa
+        validacaoColisaoTrocaMapa();
 
         if (abertoFechado % 2 == 0) {
             abertoFechado = 0;
@@ -606,6 +636,9 @@ void Window::criarMovimentacaoTecladoObjeto(unsigned char key, int x, int y) {
         // Trata colisão de coleta
         validacaoColisaoColeta();
 
+        // Trata colisão mudanca de mapa
+        validacaoColisaoTrocaMapa();
+
         if (abertoFechado % 2 == 0) {
             abertoFechado = 2;
         } else {
@@ -627,6 +660,9 @@ void Window::criarMovimentacaoTecladoObjeto(unsigned char key, int x, int y) {
         // Trata colisão de coleta
         validacaoColisaoColeta();
 
+        // Trata colisão mudanca de mapa
+        validacaoColisaoTrocaMapa();
+
         if (abertoFechado % 2 == 0) {
             abertoFechado = 6;
         } else {
@@ -647,6 +683,9 @@ void Window::criarMovimentacaoTecladoObjeto(unsigned char key, int x, int y) {
 
         // Trata colisão de coleta
         validacaoColisaoColeta();
+
+        // Trata colisão mudanca de mapa
+        validacaoColisaoTrocaMapa();
 
         if (abertoFechado % 2 == 0) {
             abertoFechado = 4;
