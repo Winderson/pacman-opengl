@@ -20,6 +20,7 @@ public:
     void static criarMapaMatriz(void);
     void static criarObjetoPrincipal(void);
     void static criarAnimacaoObjeto(int valor);
+    void static criarAnimacaoInimigos(int valor);
     void static criarMovimentacaoTecladoObjeto(unsigned char key, int x, int y);
     static int abertoFechado;
     static int milisegundoTimer;
