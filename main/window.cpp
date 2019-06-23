@@ -7,7 +7,7 @@ using namespace std;
 
 
 int Window::abertoFechado = 2;
-int Window::milisegundoTimer = 350;
+int Window::milisegundoTimer = 150;
 
 // Movimento do objeto
 float dimensaoEsquerda = 0;
@@ -44,6 +44,11 @@ int mapaCorrente = 1;
 
 // Variavel responsavel pela exibicao da intro
 bool intro = false;
+bool triangulos = false;
+bool flagMudancaMapa = true;
+
+// Variavel direcao
+int direcaoPacman = 0;
 
 Objeto objetos[TAMANHO_MATRIZ_MAPA][TAMANHO_MATRIZ_MAPA];
 int matrizMapa1[TAMANHO_MATRIZ_MAPA][TAMANHO_MATRIZ_MAPA];
@@ -155,6 +160,21 @@ void Window::converterMapaMatriz(int matrizMapa[TAMANHO_MATRIZ_MAPA][TAMANHO_MAT
  */
 void Window::criarPersonagemPacman() {
     float theta;
+
+    if(!flagMudancaMapa){
+        flagMudancaMapa = true;
+        for (int l = 0; l < TAMANHO_MATRIZ_MAPA; l++) {
+            for (int c = 0; c < TAMANHO_MATRIZ_MAPA; c++) {
+                if(objetos[l][c].getRotulo() == 'd'){
+                    personagemX = objetos[l][c].getPosicaoX()+10;
+                    personagemY = objetos[l][c].getPosicaoY()+6;
+                    break;
+                }
+            }
+        }
+    }
+
+
     glColor3f(255, 255, 0);
     glBegin(GL_POLYGON);
     for (int i = 0; i < 360; i++) {
@@ -267,9 +287,9 @@ void Window::criarObjetosMatriz(void) {
         for (int c = 0; c < TAMANHO_MATRIZ_MAPA; c++) {
             if (objetos[l][c].getRotulo() == 'a') {
                 glBegin(GL_QUADS);
-                if(mapaCorrente == 1)
+                if (mapaCorrente == 1)
                     glColor3f(0, 0, 255);
-                else if (mapaCorrente == 2){
+                else if (mapaCorrente == 2) {
                     glColor3f(0, 255, 0);
                 }
                 glVertex2f(objetos[l][c].getPosicaoX(), objetos[l][c].getPosicaoY());
@@ -296,7 +316,7 @@ void Window::criarObjetosMatriz(void) {
                                objetos[l][c].getPosicaoY() + raioObjeto * sin(theta));
                 }
                 glEnd();
-                red +=50;
+                red += 50;
                 green += 2;
                 blue += 20;
             }
@@ -346,17 +366,27 @@ void Window::criarAnimacaoPacman(int valor) {
     criarCenario();
 }
 
-void validacaoColisaoTrocaMapa(){
+void Window::validacaoColisaoTrocaMapa() {
     for (int l = 0; l < TAMANHO_MATRIZ_MAPA; l++) {
         for (int c = 0; c < TAMANHO_MATRIZ_MAPA; c++) {
             // Colisão com as paredes do mapa
             if (objetos[l][c].getRotulo() == 'd') {
-                bool colisaoX = personagemX - raioObjeto >= objetos[l][c].getPosicaoX() &&
-                                objetos[l][c].getPosicaoX() + (objetos[l][c].getComprimento()) >= personagemX-raioObjeto;
-                bool colisaoY = personagemY - raioObjeto >= objetos[l][c].getPosicaoY() &&
-                                objetos[l][c].getPosicaoY() + (objetos[l][c].getAltura()) >= personagemY - raioObjeto;
+//                bool colisaoX = personagemX - raioObjeto >= objetos[l][c].getPosicaoX() &&
+//                                objetos[l][c].getPosicaoX() + (objetos[l][c].getComprimento()) >=
+//                                personagemX - raioObjeto;
+//                bool colisaoY = personagemY - raioObjeto >= objetos[l][c].getPosicaoY() &&
+//                                objetos[l][c].getPosicaoY() + (objetos[l][c].getAltura()) >= personagemY - raioObjeto;
+                bool colisaoX = personagemX >= objetos[l][c].getPosicaoX() &&
+                                objetos[l][c].getPosicaoX() + objetos[l][c].getComprimento() >= personagemX;
+                bool colisaoY = personagemY + raioObjeto >= objetos[l][c].getPosicaoY() &&
+                                objetos[l][c].getPosicaoY() + objetos[l][c].getAltura() >= personagemY;
                 if (colisaoX && colisaoY) {
-                    mapaCorrente = 2;
+                    if(mapaCorrente == 1){
+                        mapaCorrente = 2;
+                    } else {
+                        mapaCorrente = 1;
+                    }
+                    flagMudancaMapa = false;
                     glutPostRedisplay();
                 }
             }
@@ -383,6 +413,28 @@ bool validacaoColisaoDosInimigos(float posicaoX, float posicaoY) {
     return false;
 }
 
+void Window::criarTriangulosAleatorios() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    //glLoadIdentity();
+    int numeroAleatorio = rand() % 100;
+
+    //for(int indice=0; indice<numeroAleatorio;indice++){
+
+    //glTranslatef(100.0, 100.0, 0.0);
+    //glRotatef(90,0,0,0);
+    glScaled(1,2,1);
+    glBegin(GL_TRIANGLES);
+    glColor3f(1.0, 0.0, 0.0);
+    glVertex2i(250, 350);
+    glColor3f(0.0, 1.0, 0.0);
+    glVertex2i(190, 250);
+    glColor3f(0.0, 0.0, 1.0);
+    glVertex2i(320, 250);
+    glEnd();
+    //}
+    glutSwapBuffers();
+}
+
 void Window::criarTextoIntro() {
     glRasterPos2f(210, 250);
     glColor3f(0, 0, 255);
@@ -394,8 +446,8 @@ void Window::criarTextoIntro() {
     }
 
     glColor3f(255, 255, 0);
-    glRasterPos2f(215, 220);
-    string textoOpcao1 = "Comecar a jogar.";
+    glRasterPos2f(230, 220);
+    string textoOpcao1 = "Play";
     for (int i = 0; i < textoOpcao1.size(); i++) {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, textoOpcao1[i]);
     }
@@ -415,7 +467,7 @@ void Window::criarTextoIntro() {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, texto2[i]);
     }
 
-    glColor3f(255,255,0);
+    glColor3f(255, 255, 0);
     glRasterPos2f(152, 50);
     string texto3 = "Winderson Jose Barboza dos Santos";
     for (int i = 0; i < texto2.size(); i++) {
@@ -430,7 +482,7 @@ void Window::criarAnimacaoPacmanIntro(int valor) {
         abertoFechado = 2;
     }
 
-    if(personagemX < 250) {
+    if (personagemX < 250) {
         personagemX += alteracaoPosicaoPacman;
     }
 
@@ -583,17 +635,35 @@ void validacaoColisaoColeta() {
     }
 }
 
-void Window::criarAcaoMouse(int button, int state, int x, int y){
+void Window::criarAcaoMouse(int button, int state, int x, int y) {
     int aux = 0;
-    if(x >= 215 && x <= 306 && y>=220 && y<298){
+    if (x >= 215 && x <= 306 && y >= 220 && y < 298) {
         intro = true;
         raioObjeto = 11;
         alteracaoPosicaoPacman = 2;
         personagemX = 250;
         glutPostRedisplay();
+    } else if (x >= 230 && x <= 306 && y >= 312 && y <= 324) {
+        triangulos = true;
+        intro = false;
     }
 }
 
+void Window::criarAnimacaoMovimentoPacman(char direcao){
+
+    while(!validaColisaoParedes()) {
+        if (direcao == 'E') {
+            personagemX -= alteracaoPosicaoPacman;
+        } else if (direcao == 'D') {
+            personagemX += alteracaoPosicaoPacman;
+        } else if (direcao == 'C') {
+            personagemY += alteracaoPosicaoPacman;
+        } else if (direcao == 'B') {
+            personagemY -= alteracaoPosicaoPacman;
+        }
+    }
+
+}
 
 void Window::criarMovimentacaoTecladoObjeto(unsigned char key, int x, int y) {
     if (key == 97) { // tecla 'a' pressionada
@@ -699,25 +769,28 @@ void Window::criarMovimentacaoTecladoObjeto(unsigned char key, int x, int y) {
 }
 
 
-
 /**
  * Efetua a exibição
  */
 void Window::exibir(void) {
-    if(intro) {
-        if (mapaCorrente == 1) {
-            criarMapa1Matriz();
-        } else if (mapaCorrente == 2) {
-            criarMapa2Matriz();
+    if (!triangulos) {
+        if (intro) {
+            if (mapaCorrente == 1) {
+                criarMapa1Matriz();
+            } else if (mapaCorrente == 2) {
+                criarMapa2Matriz();
+            }
+            glutTimerFunc(milisegundoTimer, criarAnimacaoPacman, abertoFechado);
+            glutTimerFunc(milisecMovimentoInimigos, criarAnimacaoInimigos, abertoFechado);
+            glutKeyboardFunc(criarMovimentacaoTecladoObjeto);
+        } else {
+            raioObjeto = 25;
+            //alteracaoPosicaoPacman = 20;
+            //personagemX = 250;
+            glutMouseFunc(criarAcaoMouse);
+            criarIntro();
         }
-        glutTimerFunc(milisegundoTimer, criarAnimacaoPacman, abertoFechado);
-        glutTimerFunc(milisecMovimentoInimigos, criarAnimacaoInimigos, abertoFechado);
-        glutKeyboardFunc(criarMovimentacaoTecladoObjeto);
     } else {
-        raioObjeto = 25;
-        //alteracaoPosicaoPacman = 20;
-        //personagemX = 250;
-        glutMouseFunc(criarAcaoMouse);
-        criarIntro();
+        criarTriangulosAleatorios();
     }
 }

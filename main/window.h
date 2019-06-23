@@ -29,8 +29,11 @@ public:
     void static criarObjetosMatriz(void);
     void static criarAnimacaoPacman(int valor);
     void static criarAnimacaoInimigos(int valor);
+    void static criarAnimacaoMovimentoPacman(char direcao);
     void static criarMovimentacaoTecladoObjeto(unsigned char key, int x, int y);
     void static criarAcaoMouse(int button, int state, int x, int y);
+    void static criarTriangulosAleatorios();
+    void static validacaoColisaoTrocaMapa();
     void static criarAnimacaoPacmanIntro(int valor);
     void static criarTextoIntro();
     static int abertoFechado;
