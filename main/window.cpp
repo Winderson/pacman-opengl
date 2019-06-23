@@ -148,6 +148,12 @@ void Window::converterMapaMatriz(int matrizMapa[TAMANHO_MATRIZ_MAPA][TAMANHO_MAT
                 objetos[l][c].setPosicaoY(y);
                 objetos[l][c].setComprimento(10);
                 objetos[l][c].setAltura(10);
+            } else {
+                objetos[l][c].setRotulo(' ');
+                objetos[l][c].setPosicaoX(0);
+                objetos[l][c].setPosicaoY(0);
+                objetos[l][c].setComprimento(0);
+                objetos[l][c].setAltura(0);
             }
         }
         x = 3;
@@ -166,8 +172,13 @@ void Window::criarPersonagemPacman() {
         for (int l = 0; l < TAMANHO_MATRIZ_MAPA; l++) {
             for (int c = 0; c < TAMANHO_MATRIZ_MAPA; c++) {
                 if(objetos[l][c].getRotulo() == 'd'){
-                    personagemX = objetos[l][c].getPosicaoX()+10;
-                    personagemY = objetos[l][c].getPosicaoY()+6;
+                    if(mapaCorrente == 2) {
+                        personagemX = objetos[l][c].getPosicaoX() + 10;
+                        personagemY = objetos[l][c].getPosicaoY() + 6;
+                    } else {
+                        personagemX = objetos[l][c].getPosicaoX() - 10;
+                        personagemY = objetos[l][c].getPosicaoY() + 6;
+                    }
                     break;
                 }
             }
