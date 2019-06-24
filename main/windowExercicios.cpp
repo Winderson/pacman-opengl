@@ -5,6 +5,8 @@ float WindowExercicios::translacaoNegativa = -20;
 float WindowExercicios::escalaPositiva = 0.1;
 float WindowExercicios::escalaNegativa = -0.1;
 int quantidadeTriangulos = 0;
+bool aumentandoEscala = false;
+int contadorEscala = 1;
 
 Objeto objetosOriginais[45][45];
 Objeto objetosHegonos[3][3];
@@ -32,10 +34,11 @@ void WindowExercicios::iniciar(int argc, char **argv) {
 
 void WindowExercicios::exibir() {
     glClear(GL_COLOR_BUFFER_BIT);
-    //criarTriangulo();
+    criarTriangulo();
     //exibirTriangulos();
-    exibirHexagonos();
-    glutTimerFunc(350, movimentoHexagono, 0);
+    //exibirHexagonos();
+    //glutTimerFunc(350, movimentoHexagono, 0);
+    glutTimerFunc(500, aumentoEscala, contadorEscala);
     glutSwapBuffers();
 }
 
@@ -243,5 +246,22 @@ bool WindowExercicios::validaColisaoHexagono(float posicaoX, float posicaoY) {
         return true;
     }
     return false;
+}
+
+void WindowExercicios::aumentoEscala(int valor){
+    if(valor <= 10){
+        if(aumentandoEscala) {
+            glScalef(1.1, 1.1, 1);
+        } else {
+            glScalef(0.9, 0.9, 1);
+        }
+        contadorEscala++;
+    } else {
+        if(!aumentandoEscala) {
+            aumentandoEscala = true;
+            contadorEscala = 1;
+        }
+    }
+    glutPostRedisplay();
 }
 

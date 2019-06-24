@@ -24,6 +24,7 @@ public:
     float static escalaNegativa;
     bool static  validaColisaoHexagono(float posicaoX, float posicaoY);
     void static movimentoHexagono(int valor);
+    void static aumentoEscala(int valor);
 };
 
 

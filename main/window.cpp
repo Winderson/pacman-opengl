@@ -319,7 +319,7 @@ void Window::criarObjetosMatriz(void) {
                 glVertex2f(objetos[l][c].getPosicaoX(), objetos[l][c].getPosicaoY() + objetos[l][c].getAltura());
                 glEnd();
             } else if (objetos[l][c].getRotulo() == 'c') {
-                glColor3f(red, green, blue);
+                glColor3f(rand()%3, rand()%3, rand()%3);
                 glBegin(GL_POLYGON);
                 for (int i = 0; i < 360; i++) {
                     theta = i * 3.142 / 180;
@@ -588,6 +588,7 @@ void Window::criarAnimacaoInimigos(int valor) {
         }
     }
     criarCenario();
+    //glutPostRedisplay();
     glutTimerFunc(milisecMovimentoInimigos, criarAnimacaoInimigos, abertoFechado);
 }
 
