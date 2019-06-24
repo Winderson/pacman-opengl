@@ -49,6 +49,9 @@ bool flagMudancaMapa = true;
 
 // Variavel direcao
 int direcaoPacman = 0;
+bool cameraAtiva = false;
+
+bool animacoesSetadas = false;
 
 Objeto objetos[TAMANHO_MATRIZ_MAPA][TAMANHO_MATRIZ_MAPA];
 int matrizMapa1[TAMANHO_MATRIZ_MAPA][TAMANHO_MATRIZ_MAPA];
@@ -68,7 +71,6 @@ void Window::iniciar(int argc, char **argv) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(dimensaoEsquerda, dimensaoDireita, dimensaoBaixo, dimensaoCima);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glutDisplayFunc(this->exibir);
     glutMainLoop();
 }
@@ -319,7 +321,7 @@ void Window::criarObjetosMatriz(void) {
                 glVertex2f(objetos[l][c].getPosicaoX(), objetos[l][c].getPosicaoY() + objetos[l][c].getAltura());
                 glEnd();
             } else if (objetos[l][c].getRotulo() == 'c') {
-                glColor3f(rand()%3, rand()%3, rand()%3);
+                glColor3f(244, 144, 255);
                 glBegin(GL_POLYGON);
                 for (int i = 0; i < 360; i++) {
                     theta = i * 3.142 / 180;
@@ -405,10 +407,21 @@ void Window::validacaoColisaoTrocaMapa() {
     }
 }
 
+void Window::mudarCamera(){
+    if(cameraAtiva){
+        dimensaoDireita = 500;
+        dimensaoEsquerda = 0;
+        cameraAtiva = false;
+    } else {
+        dimensaoDireita = personagemX+125;
+        dimensaoEsquerda = personagemX-125;
+        cameraAtiva = true;
+    }
+}
+
 bool validacaoColisaoDosInimigos(float posicaoX, float posicaoY) {
     for (int l = 0; l < TAMANHO_MATRIZ_MAPA; l++) {
         for (int c = 0; c < TAMANHO_MATRIZ_MAPA; c++) {
-
             // Colisão com as paredes do mapa
             if (objetos[l][c].getRotulo() == 'a') {
                 bool colisaoX = posicaoX + raioObjeto >= objetos[l][c].getPosicaoX() - 3 &&
@@ -447,39 +460,38 @@ void Window::criarTriangulosAleatorios() {
 }
 
 void Window::criarTextoIntro() {
-    glRasterPos2f(210, 250);
+    glRasterPos2f(200, 250);
     glColor3f(0, 0, 255);
-
-    glRasterPos2f(210, 250);
+    glRasterPos2f(200, 250);
     string texto = "PACMAN";
     for (int i = 0; i < texto.size(); i++) {
         glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, texto[i]);
     }
 
     glColor3f(255, 255, 0);
-    glRasterPos2f(230, 220);
-    string textoOpcao1 = "Play";
+    glRasterPos2f(210, 220);
+    string textoOpcao1 = "<<< PLAY >>>";
     for (int i = 0; i < textoOpcao1.size(); i++) {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, textoOpcao1[i]);
     }
 
-    glColor3f(255, 255, 0);
-    glRasterPos2f(230, 190);
-    string textoOpcao2 = "Triangulos.";
-    for (int i = 0; i < textoOpcao2.size(); i++) {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, textoOpcao2[i]);
-    }
+//    glColor3f(255, 255, 0);
+//    glRasterPos2f(220, 190);
+//    string textoOpcao2 = "Triangulos.";
+//    for (int i = 0; i < textoOpcao2.size(); i++) {
+//        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, textoOpcao2[i]);
+//    }
 
 
     glColor3f(0, 255, 0);
-    glRasterPos2f(150, 70);
+    glRasterPos2f(140, 70);
     string texto2 = "Computacao Grafica / Prof.: Diogenes";
     for (int i = 0; i < texto2.size(); i++) {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, texto2[i]);
     }
 
     glColor3f(255, 255, 0);
-    glRasterPos2f(152, 50);
+    glRasterPos2f(142, 50);
     string texto3 = "Winderson Jose Barboza dos Santos";
     for (int i = 0; i < texto2.size(); i++) {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, texto3[i]);
@@ -678,7 +690,11 @@ void Window::criarAnimacaoMovimentoPacman(char direcao){
 }
 
 void Window::criarMovimentacaoTecladoObjeto(unsigned char key, int x, int y) {
-    if (key == 97) { // tecla 'a' pressionada
+    if(key == 99) { //tecla 'c'
+        mudarCamera();
+        glLoadIdentity();
+        gluOrtho2D(dimensaoEsquerda, dimensaoDireita, dimensaoBaixo, dimensaoCima);
+    } else if (key == 97) { // tecla 'a' pressionada
         float auxiliar = personagemX;
         personagemX -= alteracaoPosicaoPacman;
         if (validaColisaoParedes()) {
@@ -776,6 +792,13 @@ void Window::criarMovimentacaoTecladoObjeto(unsigned char key, int x, int y) {
         }
     }
 
+    if(cameraAtiva) {
+        dimensaoDireita = personagemX + 125;
+        dimensaoEsquerda = personagemX - 125;
+        glLoadIdentity();
+        gluOrtho2D(dimensaoEsquerda, dimensaoDireita, dimensaoBaixo, dimensaoCima);
+    }
+
     // Criação de timer
     glutTimerFunc(milisegundoTimer, criarAnimacaoPacman, abertoFechado);
 }
@@ -785,6 +808,7 @@ void Window::criarMovimentacaoTecladoObjeto(unsigned char key, int x, int y) {
  * Efetua a exibição
  */
 void Window::exibir(void) {
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     if (!triangulos) {
         if (intro) {
             if (mapaCorrente == 1) {
@@ -792,9 +816,13 @@ void Window::exibir(void) {
             } else if (mapaCorrente == 2) {
                 criarMapa2Matriz();
             }
-            glutTimerFunc(milisegundoTimer, criarAnimacaoPacman, abertoFechado);
-            glutTimerFunc(milisecMovimentoInimigos, criarAnimacaoInimigos, abertoFechado);
-            glutKeyboardFunc(criarMovimentacaoTecladoObjeto);
+
+            if(!animacoesSetadas) {
+                glutTimerFunc(milisegundoTimer, criarAnimacaoPacman, abertoFechado);
+                glutTimerFunc(milisecMovimentoInimigos, criarAnimacaoInimigos, abertoFechado);
+                glutKeyboardFunc(criarMovimentacaoTecladoObjeto);
+                animacoesSetadas = true;
+            }
         } else {
             raioObjeto = 25;
             //alteracaoPosicaoPacman = 20;

@@ -38,7 +38,7 @@ void WindowExercicios::exibir() {
     //exibirTriangulos();
     //exibirHexagonos();
     //glutTimerFunc(350, movimentoHexagono, 0);
-    glutTimerFunc(500, aumentoEscala, contadorEscala);
+    //glutTimerFunc(500, aumentoEscala, contadorEscala);
     glutSwapBuffers();
 }
 

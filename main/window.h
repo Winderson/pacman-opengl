@@ -39,6 +39,7 @@ public:
     static int abertoFechado;
     static int milisegundoTimer;
     static PersonagemPacman *pacman;
+    void static mudarCamera();
 };
 
 
