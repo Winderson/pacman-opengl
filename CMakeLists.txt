@@ -7,5 +7,5 @@ add_executable(PacmanOpengl
         main/main.cpp
         controller/controller.cpp controller/controller.h
         model/model.cpp model/model.h
-        view/view.cpp view/view.h model/mapa.cpp model/mapa.h main/window.cpp main/window.h model/arquivo.cpp model/arquivo.h model/matriz.h model/personagem.cpp model/personagem.h model/personagemPacman.cpp model/personagemPacman.h model/objeto.h)
+        view/view.cpp view/view.h model/mapa.cpp model/mapa.h main/window.cpp main/window.h model/arquivo.cpp model/arquivo.h model/matriz.h model/personagem.cpp model/personagem.h model/personagemPacman.cpp model/personagemPacman.h model/objeto.h main/windowExercicios.cpp main/windowExercicios.h)
 target_link_libraries(PacmanOpengl libopengl32.a libglu32.a libfreeglut.a)

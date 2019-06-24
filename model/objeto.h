@@ -54,6 +54,31 @@ public:
         _direcao = direcao;
     }
 
+    int getRed() const {
+        return red;
+    }
+
+    void setRed(int red) {
+        Objeto::red = red;
+    }
+
+    int getGreen() const {
+        return green;
+    }
+
+    void setGreen(int green) {
+        Objeto::green = green;
+    }
+
+    int getBlue() const {
+        return blue;
+    }
+
+    void setBlue(int blue) {
+        Objeto::blue = blue;
+    }
+
+
 private:
     float _posicaoX;
     float _posicaoY;
@@ -61,6 +86,9 @@ private:
     float _altura;
     char _rotulo;
     char _direcao;
+    int red;
+    int green;
+    int blue;
 };
 
 #endif //_OBJETO_H
