@@ -25,7 +25,8 @@ public:
     bool static  validaColisaoHexagono(float posicaoX, float posicaoY);
     void static movimentoHexagono(int valor);
     void static aumentoEscala(int valor);
+    void static translacaoCompleta(int valor);
+    void static rotacao360(int valor);
 };
-
 
 #endif //_WINDOWEXERCICIOS_H

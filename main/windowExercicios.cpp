@@ -7,6 +7,8 @@ float WindowExercicios::escalaNegativa = -0.1;
 int quantidadeTriangulos = 0;
 bool aumentandoEscala = false;
 int contadorEscala = 1;
+int contadorTranslacao = 5;
+int direcaoTranslacao = 1;
 
 Objeto objetosOriginais[45][45];
 Objeto objetosHegonos[3][3];
@@ -21,6 +23,7 @@ void WindowExercicios::iniciar(int argc, char **argv) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(0, 500, 0, 500);
+    //gluOrtho2D(-500, 500, -500, 500);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     //glutTimerFunc(1000, criarTriangulosAleatorios, 1);
     this->criarTriangulosAleatorios();
@@ -34,12 +37,45 @@ void WindowExercicios::iniciar(int argc, char **argv) {
 
 void WindowExercicios::exibir() {
     glClear(GL_COLOR_BUFFER_BIT);
-    criarTriangulo();
+    //
+    // criarTriangulo();
     //exibirTriangulos();
-    //exibirHexagonos();
-    //glutTimerFunc(350, movimentoHexagono, 0);
+    exibirHexagonos();
+    glutTimerFunc(350, movimentoHexagono, 0);
     //glutTimerFunc(500, aumentoEscala, contadorEscala);
+    //glutTimerFunc(350, translacaoCompleta, direcaoTranslacao);
+    //glutTimerFunc(500, rotacao360, direcaoTranslacao);
     glutSwapBuffers();
+}
+
+void WindowExercicios::translacaoCompleta(int valor){
+    if(valor == 1 ){
+        glTranslatef(-15, 0, 0);
+        if(contadorTranslacao == 15){
+            direcaoTranslacao = 2;
+            contadorTranslacao = 0;
+        }
+    } else if(valor == 2){
+        glTranslatef(15, 0, 0);
+        if(contadorTranslacao == 15){
+            direcaoTranslacao = 3;
+            contadorTranslacao = 0;
+        }
+    } else if(valor == 3){
+        glTranslatef(0, -15, 0);
+        if(contadorTranslacao == 15){
+            direcaoTranslacao = 4;
+            contadorTranslacao = 0;
+        }
+    } else if(valor == 4){
+        glTranslatef(0, 15, 0);
+        if(contadorTranslacao == 15){
+            direcaoTranslacao = 1;
+            contadorTranslacao = 0;
+        }
+    }
+    contadorTranslacao++;
+    glutPostRedisplay();
 }
 
 void WindowExercicios::exibirTriangulos() {
@@ -130,6 +166,12 @@ void WindowExercicios::criarMovimentoTeclado(unsigned char key, int x, int y) {
         glTranslatef(0, translacaoPositiva, 0);
     } else if (key == 100) { // d
         glTranslatef(0, translacaoNegativa, 0);
+    } else if (key == 120) { // x
+        glTranslatef(10, 0, 0);
+        glRotatef(5,0,0,1);
+    } else if (key == 122) { // z
+        glTranslatef(-10, 0, 0);
+        glRotatef(-5,0,0,1);
     }
     glutPostRedisplay();
 }
@@ -143,6 +185,30 @@ void WindowExercicios::criarTriangulo() {
     glColor3f(0.0, 0.0, 1.0);
     glVertex2i(320, 250);
     glEnd();
+}
+
+void WindowExercicios::rotacao360(int valor){
+    if(valor == 1 ){
+        glRotatef(1, 1, 0, 0);
+        if(contadorTranslacao == 360){
+            direcaoTranslacao = 2;
+            contadorTranslacao = 0;
+        }
+    } else if(valor == 2){
+        glRotatef(1, 0, 1, 0);
+        if(contadorTranslacao == 360){
+            direcaoTranslacao = 3;
+            contadorTranslacao = 0;
+        }
+    } else if(valor == 3){
+        glRotatef(1, 0, 0, 1);
+        if(contadorTranslacao == 360){
+            direcaoTranslacao = 1;
+            contadorTranslacao = 0;
+        }
+    }
+    contadorTranslacao++;
+    glutPostRedisplay();
 }
 
 void WindowExercicios::criarMovimentoTecladoEspecial(int key, int x, int y) {

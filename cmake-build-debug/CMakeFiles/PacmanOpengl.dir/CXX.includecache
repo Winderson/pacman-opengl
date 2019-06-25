@@ -6,15 +6,17 @@
 
 #IncludeRegexTransform: 
 
-C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/main/window.cpp
+C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/main/main.cpp
 iostream
 -
-fstream
+GL/gl.h
 -
-string
+Gl/glut.h
 -
 window.h
 C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/main/window.h
+windowExercicios.h
+C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/main/windowExercicios.h
 
 C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/main/window.h
 windows.h
@@ -37,6 +39,18 @@ C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/ar
 C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/matriz.h
 ../model/personagemPacman.h
 C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/personagemPacman.h
+
+C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/main/windowExercicios.h
+windows.h
+-
+GL/gl.h
+-
+Gl/glut.h
+-
+GL/glu.h
+-
+../model/objeto.h
+C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/objeto.h
 
 C:/Users/Winderson/Documents/Universidade/7_periodo/GitHub/PacmanOpengl/model/arquivo.h
 vector
