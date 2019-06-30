@@ -411,10 +411,14 @@ void Window::mudarCamera(){
     if(cameraAtiva){
         dimensaoDireita = 500;
         dimensaoEsquerda = 0;
+        dimensaoCima = 500;
+        dimensaoBaixo = 0;
         cameraAtiva = false;
     } else {
         dimensaoDireita = personagemX+125;
         dimensaoEsquerda = personagemX-125;
+        dimensaoBaixo = personagemY-125;
+        dimensaoCima = personagemY+125;
         cameraAtiva = true;
     }
 }
@@ -795,6 +799,8 @@ void Window::criarMovimentacaoTecladoObjeto(unsigned char key, int x, int y) {
     if(cameraAtiva) {
         dimensaoDireita = personagemX + 125;
         dimensaoEsquerda = personagemX - 125;
+        dimensaoBaixo = personagemY - 125;
+        dimensaoCima = personagemY + 125;
         glLoadIdentity();
         gluOrtho2D(dimensaoEsquerda, dimensaoDireita, dimensaoBaixo, dimensaoCima);
     }
